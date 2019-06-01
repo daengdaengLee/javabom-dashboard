@@ -24,4 +24,9 @@ public class ArticlesController {
     public String updateArticle(@PathVariable String articleId) {
         return "/articles/" + articleId;
     }
+
+    @DeleteMapping("/articles/{articleId}")
+    public String deleteArticle(@PathVariable String articleId) {
+        return "/articles/" + articleId;
+    }
 }
