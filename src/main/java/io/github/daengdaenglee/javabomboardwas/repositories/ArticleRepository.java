@@ -1,13 +1,18 @@
 package io.github.daengdaenglee.javabomboardwas.repositories;
 
 import io.github.daengdaenglee.javabomboardwas.entities.Article;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class ArticleRepository {
+    @Value("${ARTICLES_STORE_PATH}")
+    public String storePath;
+
     public Article insert(Article article) {
         return article;
     }
