@@ -39,8 +39,18 @@ public class ArticleController {
     }
 
     @PostMapping("/articles")
-    public String createArticle() {
-        return "/articles";
+    public Map<String, ArticleJSON> createArticle(@RequestBody Object requestBody) {
+        Map<String, ArticleJSON> response = new HashMap<>();
+
+        Map data = (Map) ((Map) requestBody).get("data");
+        Map attributes = (Map) data.get("attributes");
+        String title = (String) attributes.get("title");
+        String body = (String) attributes.get("body");
+
+        ArticleJSON article = new ArticleJSON(articleService.makeNewArticle(title, body));
+        response.put("data", article);
+
+        return response;
     }
 
     @PutMapping("/articles/{articleId}")
