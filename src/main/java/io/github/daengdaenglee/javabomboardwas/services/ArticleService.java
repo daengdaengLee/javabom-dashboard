@@ -15,4 +15,8 @@ public class ArticleService {
     public Article getArticleById(String id) {
         return new Article(id, null, null);
     }
+
+    public Article makeNewArticle(String title, String body) {
+        return new Article(null, title, body);
+    }
 }
