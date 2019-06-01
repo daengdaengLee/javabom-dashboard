@@ -23,4 +23,8 @@ public class ArticleService {
     public Article changeArticle(Article article) {
         return article;
     }
+
+    public Boolean deleteArticleById(String id) {
+        return true;
+    }
 }
