@@ -29,8 +29,13 @@ public class ArticleController {
     }
 
     @GetMapping("/articles/{articleId}")
-    public String readArticle(@PathVariable String articleId) {
-        return "/articles/" + articleId;
+    public Map<String, ArticleJSON> readArticle(@PathVariable String articleId) {
+        Map<String, ArticleJSON> response = new HashMap<>();
+
+        ArticleJSON article = new ArticleJSON(articleService.getArticleById(articleId));
+        response.put("data", article);
+
+        return response;
     }
 
     @PostMapping("/articles")
