@@ -21,7 +21,7 @@ public class ArticleController {
         Map<String, List<ArticleJSON>> response = new HashMap<>();
 
         List<ArticleJSON> allArticles = articleService.getAllArticles().stream()
-                .map(article -> new ArticleJSON(article))
+                .map(ArticleJSON::fromArticle)
                 .collect(Collectors.toList());
         response.put("data", allArticles);
 
@@ -32,8 +32,8 @@ public class ArticleController {
     public Map<String, ArticleJSON> readArticle(@PathVariable String articleId) {
         Map<String, ArticleJSON> response = new HashMap<>();
 
-        ArticleJSON article = new ArticleJSON(articleService.getArticleById(articleId));
-        response.put("data", article);
+        ArticleJSON articleJSON = ArticleJSON.fromArticle(articleService.getArticleById(articleId));
+        response.put("data", articleJSON);
 
         return response;
     }
@@ -47,14 +47,14 @@ public class ArticleController {
 
         response.put(
                 "data",
-                new ArticleJSON(articleService.makeNewArticle(article.title, article.body))
+                ArticleJSON.fromArticle(articleService.makeNewArticle(article.title, article.body))
         );
 
         return response;
     }
 
     @PutMapping("/articles/{articleId}")
-    public String updateArticle(@PathVariable String articleId) {
+    public String updateArticle(@PathVariable String articleId, @RequestBody Object requestBody) {
         return "/articles/" + articleId;
     }
 
@@ -69,11 +69,15 @@ public class ArticleController {
         public Map<String, String> attributes = new HashMap<>();
         public Map<String, String> links = new HashMap<>();
 
-        public ArticleJSON(Article article) {
-            this.id = article.id;
-            this.attributes.put("title", article.title);
-            this.attributes.put("body", article.body);
-            this.links.put("self", "/api/v1/articles/" + article.id);
+        public static ArticleJSON fromArticle(Article article) {
+            ArticleJSON articleJSON = new ArticleJSON();
+
+            articleJSON.id = article.id;
+            articleJSON.attributes.put("title", article.title);
+            articleJSON.attributes.put("body", article.body);
+            articleJSON.links.put("self", "/api/v1/articles/" + article.id);
+
+            return articleJSON;
         }
     }
 
