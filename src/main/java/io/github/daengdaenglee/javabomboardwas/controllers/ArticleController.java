@@ -55,8 +55,19 @@ public class ArticleController {
     }
 
     @PutMapping("/articles/{articleId}")
-    public String updateArticle(@PathVariable String articleId, @RequestBody Object requestBody) {
-        return "/articles/" + articleId;
+    public Map<String, ArticleJSON> updateArticle(@PathVariable String articleId, @RequestBody Map<String, ArticleJSON> requestBody) {
+        Map<String, ArticleJSON> response = new HashMap<>();
+
+        ArticleJSON articleJSON = requestBody.get("data");
+        String title = articleJSON.attributes.get("title");
+        String body = articleJSON.attributes.get("body");
+
+        Article article = new Article(articleId, title, body);
+        article = articleService.changeArticle(article);
+
+        response.put("data", ArticleJSON.fromArticle(article));
+
+        return response;
     }
 
     @DeleteMapping("/articles/{articleId}")
