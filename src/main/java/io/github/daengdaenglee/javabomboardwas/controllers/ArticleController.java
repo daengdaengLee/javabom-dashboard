@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
-public class ArticlesController {
+public class ArticleController {
     @GetMapping("/articles")
     public String listAllArticles() {
         return "/articles";
