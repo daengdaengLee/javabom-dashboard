@@ -39,15 +39,16 @@ public class ArticleController {
     }
 
     @PostMapping("/articles")
-    public Map<String, ArticleJSON> createArticle(@RequestBody Object requestBody) {
+    public Map<String, ArticleJSON> createArticle(@RequestBody Map<String, ArticleJSON> requestBody) {
         Map<String, ArticleJSON> response = new HashMap<>();
 
-        Object articleJSON = ((Map) requestBody).get("data");
-        Article article = decodeArticleJSON(articleJSON);
+        ArticleJSON articleJSON = requestBody.get("data");
+        String title = articleJSON.attributes.get("title");
+        String body = articleJSON.attributes.get("body");
 
         response.put(
                 "data",
-                ArticleJSON.fromArticle(articleService.makeNewArticle(article.title, article.body))
+                ArticleJSON.fromArticle(articleService.makeNewArticle(title, body))
         );
 
         return response;
@@ -79,17 +80,5 @@ public class ArticleController {
 
             return articleJSON;
         }
-    }
-
-    public static Article decodeArticleJSON(Object json) {
-        Map map = (Map) json;
-
-        String id = (String) map.get("id");
-
-        Map attributes = (Map) map.get("attributes");
-        String title = (String) attributes.get("title");
-        String body = (String) attributes.get("body");
-
-        return new Article(id, title, body);
     }
 }
