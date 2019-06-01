@@ -1,10 +1,15 @@
 package io.github.daengdaenglee.javabomboardwas.controllers;
 
+import io.github.daengdaenglee.javabomboardwas.services.ArticleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
 public class ArticleController {
+    @Autowired
+    public ArticleService articleService;
+
     @GetMapping("/articles")
     public String listAllArticles() {
         return "/articles";
