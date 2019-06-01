@@ -19,4 +19,9 @@ public class ArticlesController {
     public String createArticle() {
         return "/articles";
     }
+
+    @PutMapping("/articles/{articleId}")
+    public String updateArticle(@PathVariable String articleId) {
+        return "/articles/" + articleId;
+    }
 }
