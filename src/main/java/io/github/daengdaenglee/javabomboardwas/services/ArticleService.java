@@ -11,4 +11,8 @@ public class ArticleService {
     public List<Article> getAllArticles() {
         return new ArrayList<Article>();
     }
+
+    public Article getArticleById(String id) {
+        return new Article(id, null, null);
+    }
 }
