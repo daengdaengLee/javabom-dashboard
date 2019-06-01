@@ -16,8 +16,8 @@ public class ArticleService {
         return new Article(id, null, null);
     }
 
-    public Article makeNewArticle(String title, String body) {
-        return new Article(null, title, body);
+    public Article makeNewArticle(Article article) {
+        return article;
     }
 
     public Article changeArticle(Article article) {
