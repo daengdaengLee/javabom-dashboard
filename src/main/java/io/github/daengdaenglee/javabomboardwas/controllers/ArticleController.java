@@ -76,4 +76,16 @@ public class ArticleController {
             this.links.put("self", "/api/v1/articles/" + article.id);
         }
     }
+
+    public static Article decodeArticleJSON(Object json) {
+        Map map = (Map) json;
+
+        String id = (String) map.get("id");
+
+        Map attributes = (Map) map.get("attributes");
+        String title = (String) attributes.get("title");
+        String body = (String) attributes.get("body");
+
+        return new Article(id, title, body);
+    }
 }
