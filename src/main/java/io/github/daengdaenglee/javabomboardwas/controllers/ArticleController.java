@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -15,8 +17,15 @@ public class ArticleController {
     public ArticleService articleService;
 
     @GetMapping("/articles")
-    public String listAllArticles() {
-        return "/articles";
+    public Map<String, List<ArticleJSON>> listAllArticles() {
+        Map<String, List<ArticleJSON>> response = new HashMap<>();
+
+        List<ArticleJSON> allArticles = articleService.getAllArticles().stream()
+                .map(article -> new ArticleJSON(article))
+                .collect(Collectors.toList());
+        response.put("data", allArticles);
+
+        return response;
     }
 
     @GetMapping("/articles/{articleId}")
