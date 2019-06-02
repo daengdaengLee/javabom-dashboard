@@ -14,8 +14,8 @@ public class ArticleService {
     @Autowired
     public ArticleRepository articleRepository;
 
-    public List<Article> getAllArticles() {
-        return new ArrayList<Article>();
+    public List<Article> getAllArticles() throws IOException {
+        return articleRepository.selectAll();
     }
 
     public Article getArticleById(String id) throws IOException {
