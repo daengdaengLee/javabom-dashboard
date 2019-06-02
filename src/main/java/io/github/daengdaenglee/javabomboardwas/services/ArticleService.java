@@ -2,17 +2,18 @@ package io.github.daengdaenglee.javabomboardwas.services;
 
 import io.github.daengdaenglee.javabomboardwas.entities.Article;
 import io.github.daengdaenglee.javabomboardwas.repositories.ArticleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ArticleService {
-    @Autowired
-    public ArticleRepository articleRepository;
+    public final ArticleRepository articleRepository;
+
+    public ArticleService(ArticleRepository articleRepository) {
+        this.articleRepository = articleRepository;
+    }
 
     public List<Article> getAllArticles() throws IOException {
         return articleRepository.selectAll();
