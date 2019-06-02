@@ -72,9 +72,19 @@ public class ArticleRepository {
     }
 
     public Article update(Article article) throws IOException {
-        String fileContents = article.title + "\n\n" + article.body;
+        String fileContents = new StringBuffer()
+                .append("{")
+                .append("\"id\":\"")
+                .append(article.id)
+                .append("\",\"title\":\"")
+                .append(article.title)
+                .append("\",\"body\":")
+                .append(article.body)
+                .append("\"")
+                .append("}")
+                .toString();
 
-        FileWriter fileWriter = new FileWriter(storePath + "/" + article.id + ".txt", false);
+        FileWriter fileWriter = new FileWriter(storePath + "/" + article.id + ".json", false);
 
         fileWriter.write(fileContents);
         fileWriter.flush();
