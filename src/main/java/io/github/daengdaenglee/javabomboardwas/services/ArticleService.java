@@ -23,11 +23,7 @@ public class ArticleService {
     }
 
     public Article makeNewArticle(String title, String body) throws IOException {
-        Article article = new Article(null, title, body);
-
-        article = articleRepository.insert(article);
-
-        return article;
+        return articleRepository.insert(new Article(null, title, body));
     }
 
     public Article changeArticle(Article article) {
