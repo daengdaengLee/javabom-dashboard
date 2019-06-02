@@ -94,7 +94,7 @@ public class ArticleRepository {
     }
 
     public void deleteById(String id) throws Exception {
-        File articleFile = new File(storePath + "/" + id + ".txt");
+        File articleFile = new File(storePath + "/" + id + ".json");
         boolean isDeleted = articleFile.delete();
         if (!isDeleted) throw new Exception("Cannot delete file");
     }
