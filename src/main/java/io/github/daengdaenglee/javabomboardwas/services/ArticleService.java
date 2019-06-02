@@ -26,8 +26,8 @@ public class ArticleService {
         return articleRepository.insert(new Article(null, title, body));
     }
 
-    public Article changeArticle(Article article) {
-        return article;
+    public Article changeArticle(Article article) throws IOException {
+        return articleRepository.update(article);
     }
 
     public void deleteArticleById(String id) throws Exception {
