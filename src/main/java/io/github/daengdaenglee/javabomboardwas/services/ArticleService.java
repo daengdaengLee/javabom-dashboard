@@ -18,8 +18,8 @@ public class ArticleService {
         return new ArrayList<Article>();
     }
 
-    public Article getArticleById(String id) {
-        return new Article(id, null, null);
+    public Article getArticleById(String id) throws IOException {
+        return articleRepository.selectById(id);
     }
 
     public Article makeNewArticle(String title, String body) throws IOException {

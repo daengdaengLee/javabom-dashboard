@@ -33,8 +33,11 @@ public class ArticleController {
     public Map<String, ArticleJSON> readArticle(@PathVariable String articleId) {
         Map<String, ArticleJSON> response = new HashMap<>();
 
-        ArticleJSON articleJSON = ArticleJSON.fromArticle(articleService.getArticleById(articleId));
-        response.put("data", articleJSON);
+        try {
+            ArticleJSON articleJSON = ArticleJSON.fromArticle(articleService.getArticleById(articleId));
+            response.put("data", articleJSON);
+        } catch (Exception e) {
+        }
 
         return response;
     }
