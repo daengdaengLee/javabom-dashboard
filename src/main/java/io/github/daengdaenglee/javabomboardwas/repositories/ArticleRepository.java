@@ -1,5 +1,6 @@
 package io.github.daengdaenglee.javabomboardwas.repositories;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.daengdaenglee.javabomboardwas.entities.Article;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -32,7 +33,7 @@ public class ArticleRepository {
                 .append(id)
                 .append("\",\"title\":\"")
                 .append(article.title)
-                .append("\",\"body\":")
+                .append("\",\"body\":\"")
                 .append(article.body)
                 .append("\"")
                 .append("}")
@@ -47,24 +48,20 @@ public class ArticleRepository {
     }
 
     public Article selectById(String id) throws IOException {
-        File articleFile = new File(storePath + "/" + id + ".txt");
+        File articleFile = new File(storePath + "/" + id + ".json");
         BufferedReader bufferedReader = new BufferedReader(new FileReader(articleFile));
 
         String line = bufferedReader.readLine();
-        String title = "";
-        String body = "";
-        boolean isTitle = true;
+        String json = "";
         while (line != null) {
-            if (isTitle) title += line;
-            else body += line;
-
-            if (line.isEmpty()) isTitle = false;
-
+            json += line;
             line = bufferedReader.readLine();
         }
         bufferedReader.close();
 
-        return new Article(id, title, body);
+        Article article = new ObjectMapper().readerFor(Article.class).readValue(json);
+
+        return article;
     }
 
     public List<Article> selectAll() {
@@ -78,7 +75,7 @@ public class ArticleRepository {
                 .append(article.id)
                 .append("\",\"title\":\"")
                 .append(article.title)
-                .append("\",\"body\":")
+                .append("\",\"body\":\"")
                 .append(article.body)
                 .append("\"")
                 .append("}")
