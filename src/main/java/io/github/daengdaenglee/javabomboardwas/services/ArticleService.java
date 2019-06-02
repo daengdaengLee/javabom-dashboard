@@ -30,7 +30,7 @@ public class ArticleService {
         return article;
     }
 
-    public Boolean deleteArticleById(String id) {
-        return true;
+    public void deleteArticleById(String id) throws Exception {
+        articleRepository.deleteById(id);
     }
 }
