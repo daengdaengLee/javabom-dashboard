@@ -4,9 +4,7 @@ import io.github.daengdaenglee.javabomboardwas.entities.Article;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +36,25 @@ public class ArticleRepository {
         return new Article(articleId, article.title, article.body);
     }
 
-    public Article selectById(String id) {
-        return new Article(id, null, null);
+    public Article selectById(String id) throws IOException {
+        File articleFile = new File(storePath + "/" + id + ".txt");
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(articleFile));
+
+        String line = bufferedReader.readLine();
+        String title = "";
+        String body = "";
+        boolean isTitle = true;
+        while (line != null) {
+            if (isTitle) title += line;
+            else body += line;
+
+            if (line.isEmpty()) isTitle = false;
+
+            line = bufferedReader.readLine();
+        }
+        bufferedReader.close();
+
+        return new Article(id, title, body);
     }
 
     public List<Article> selectAll() {
