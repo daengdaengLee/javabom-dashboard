@@ -5,6 +5,7 @@ import io.github.daengdaenglee.javabomboardwas.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,10 +47,11 @@ public class ArticleController {
         String title = articleJSON.attributes.get("title");
         String body = articleJSON.attributes.get("body");
 
-        response.put(
-                "data",
-                ArticleJSON.fromArticle(articleService.makeNewArticle(title, body))
-        );
+        try {
+            Article article = articleService.makeNewArticle(title, body);
+            response.put("data", ArticleJSON.fromArticle(article));
+        } catch (IOException e) {
+        }
 
         return response;
     }
