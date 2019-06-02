@@ -50,6 +50,9 @@ public class ArticleRepository {
         return article;
     }
 
-    public void delete(String id) {
+    public void deleteById(String id) throws Exception {
+        File articleFile = new File(storePath + "/" + id + ".txt");
+        boolean isDeleted = articleFile.delete();
+        if (!isDeleted) throw new Exception("Cannot delete file");
     }
 }

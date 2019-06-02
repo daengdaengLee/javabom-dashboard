@@ -74,9 +74,10 @@ public class ArticleController {
 
     @DeleteMapping("/articles/{articleId}")
     public Object deleteArticle(@PathVariable String articleId) {
-        Boolean success = articleService.deleteArticleById(articleId);
-
-        System.out.println(success);
+        try {
+            articleService.deleteArticleById(articleId);
+        } catch (Exception e) {
+        }
 
         return null;
     }
