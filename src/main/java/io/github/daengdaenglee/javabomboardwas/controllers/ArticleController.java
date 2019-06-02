@@ -21,10 +21,13 @@ public class ArticleController {
     public Map<String, List<ArticleJSON>> listAllArticles() {
         Map<String, List<ArticleJSON>> response = new HashMap<>();
 
-        List<ArticleJSON> allArticles = articleService.getAllArticles().stream()
-                .map(ArticleJSON::fromArticle)
-                .collect(Collectors.toList());
-        response.put("data", allArticles);
+        try {
+            List<ArticleJSON> allArticles = articleService.getAllArticles().stream()
+                    .map(ArticleJSON::fromArticle)
+                    .collect(Collectors.toList());
+            response.put("data", allArticles);
+        } catch (Exception e) {
+        }
 
         return response;
     }
