@@ -46,7 +46,15 @@ public class ArticleRepository {
         return new ArrayList<>();
     }
 
-    public Article update(Article article) {
+    public Article update(Article article) throws IOException {
+        String fileContents = article.title + "\n\n" + article.body;
+
+        FileWriter fileWriter = new FileWriter(storePath + "/" + article.id + ".txt", false);
+
+        fileWriter.write(fileContents);
+        fileWriter.flush();
+        fileWriter.close();
+
         return article;
     }
 
