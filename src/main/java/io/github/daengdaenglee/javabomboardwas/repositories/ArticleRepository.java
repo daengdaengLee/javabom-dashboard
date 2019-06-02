@@ -27,18 +27,9 @@ public class ArticleRepository {
         id += 1;
 
         String articleId = Integer.toString(id);
-        String fileContents = new StringBuffer()
-                .append("{")
-                .append("\"id\":\"")
-                .append(id)
-                .append("\",\"title\":\"")
-                .append(article.title)
-                .append("\",\"body\":\"")
-                .append(article.body)
-                .append("\"")
-                .append("}")
-                .toString();
+        article = new Article(articleId, article.title, article.body);
 
+        String fileContents = new ObjectMapper().writeValueAsString(article);
         FileWriter fileWriter = new FileWriter(storePath + "/" + articleId + ".json", false);
         fileWriter.write(fileContents);
         fileWriter.flush();
@@ -69,20 +60,8 @@ public class ArticleRepository {
     }
 
     public Article update(Article article) throws IOException {
-        String fileContents = new StringBuffer()
-                .append("{")
-                .append("\"id\":\"")
-                .append(article.id)
-                .append("\",\"title\":\"")
-                .append(article.title)
-                .append("\",\"body\":\"")
-                .append(article.body)
-                .append("\"")
-                .append("}")
-                .toString();
-
+        String fileContents = new ObjectMapper().writeValueAsString(article);
         FileWriter fileWriter = new FileWriter(storePath + "/" + article.id + ".json", false);
-
         fileWriter.write(fileContents);
         fileWriter.flush();
         fileWriter.close();
