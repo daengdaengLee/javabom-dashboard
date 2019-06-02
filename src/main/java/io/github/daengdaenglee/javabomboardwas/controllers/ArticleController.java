@@ -64,10 +64,14 @@ public class ArticleController {
         String title = articleJSON.attributes.get("title");
         String body = articleJSON.attributes.get("body");
 
-        Article article = new Article(articleId, title, body);
-        article = articleService.changeArticle(article);
+        try {
+            Article article = new Article(articleId, title, body);
+            article = articleService.changeArticle(article);
 
-        response.put("data", ArticleJSON.fromArticle(article));
+            response.put("data", ArticleJSON.fromArticle(article));
+        } catch (Exception e) {
+
+        }
 
         return response;
     }
