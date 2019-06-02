@@ -18,7 +18,7 @@ public class ArticleRepository {
 
         for (File articleFile : new File(storePath).listFiles()) {
             String articleFileStr = articleFile.getName();
-            int idxExtension = articleFileStr.lastIndexOf(".txt");
+            int idxExtension = articleFileStr.lastIndexOf(".json");
             String articleIdStr = articleFileStr.substring(0, idxExtension);
             int articleIdInt = Integer.parseInt(articleIdStr);
             if (articleIdInt > id) id = articleIdInt;
@@ -26,9 +26,19 @@ public class ArticleRepository {
         id += 1;
 
         String articleId = Integer.toString(id);
-        String fileContents = article.title + "\n\n" + article.body;
+        String fileContents = new StringBuffer()
+                .append("{")
+                .append("\"id\":\"")
+                .append(id)
+                .append("\",\"title\":\"")
+                .append(article.title)
+                .append("\",\"body\":")
+                .append(article.body)
+                .append("\"")
+                .append("}")
+                .toString();
 
-        FileWriter fileWriter = new FileWriter(storePath + "/" + articleId + ".txt", false);
+        FileWriter fileWriter = new FileWriter(storePath + "/" + articleId + ".json", false);
         fileWriter.write(fileContents);
         fileWriter.flush();
         fileWriter.close();
