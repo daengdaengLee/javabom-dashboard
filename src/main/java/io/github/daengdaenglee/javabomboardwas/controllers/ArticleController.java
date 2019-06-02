@@ -37,6 +37,7 @@ public class ArticleController {
             ArticleJSON articleJSON = ArticleJSON.fromArticle(articleService.getArticleById(articleId));
             response.put("data", articleJSON);
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return response;

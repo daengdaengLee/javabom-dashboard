@@ -1,5 +1,6 @@
 package io.github.daengdaenglee.javabomboardwas.repositories;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.daengdaenglee.javabomboardwas.entities.Article;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -18,7 +19,7 @@ public class ArticleRepository {
 
         for (File articleFile : new File(storePath).listFiles()) {
             String articleFileStr = articleFile.getName();
-            int idxExtension = articleFileStr.lastIndexOf(".txt");
+            int idxExtension = articleFileStr.lastIndexOf(".json");
             String articleIdStr = articleFileStr.substring(0, idxExtension);
             int articleIdInt = Integer.parseInt(articleIdStr);
             if (articleIdInt > id) id = articleIdInt;
@@ -26,9 +27,10 @@ public class ArticleRepository {
         id += 1;
 
         String articleId = Integer.toString(id);
-        String fileContents = article.title + "\n\n" + article.body;
+        article = new Article(articleId, article.title, article.body);
 
-        FileWriter fileWriter = new FileWriter(storePath + "/" + articleId + ".txt", false);
+        String fileContents = new ObjectMapper().writeValueAsString(article);
+        FileWriter fileWriter = new FileWriter(storePath + "/" + articleId + ".json", false);
         fileWriter.write(fileContents);
         fileWriter.flush();
         fileWriter.close();
@@ -37,24 +39,20 @@ public class ArticleRepository {
     }
 
     public Article selectById(String id) throws IOException {
-        File articleFile = new File(storePath + "/" + id + ".txt");
+        File articleFile = new File(storePath + "/" + id + ".json");
         BufferedReader bufferedReader = new BufferedReader(new FileReader(articleFile));
 
         String line = bufferedReader.readLine();
-        String title = "";
-        String body = "";
-        boolean isTitle = true;
+        String json = "";
         while (line != null) {
-            if (isTitle) title += line;
-            else body += line;
-
-            if (line.isEmpty()) isTitle = false;
-
+            json += line;
             line = bufferedReader.readLine();
         }
         bufferedReader.close();
 
-        return new Article(id, title, body);
+        Article article = new ObjectMapper().readerFor(Article.class).readValue(json);
+
+        return article;
     }
 
     public List<Article> selectAll() {
@@ -62,10 +60,8 @@ public class ArticleRepository {
     }
 
     public Article update(Article article) throws IOException {
-        String fileContents = article.title + "\n\n" + article.body;
-
-        FileWriter fileWriter = new FileWriter(storePath + "/" + article.id + ".txt", false);
-
+        String fileContents = new ObjectMapper().writeValueAsString(article);
+        FileWriter fileWriter = new FileWriter(storePath + "/" + article.id + ".json", false);
         fileWriter.write(fileContents);
         fileWriter.flush();
         fileWriter.close();
@@ -74,7 +70,7 @@ public class ArticleRepository {
     }
 
     public void deleteById(String id) throws Exception {
-        File articleFile = new File(storePath + "/" + id + ".txt");
+        File articleFile = new File(storePath + "/" + id + ".json");
         boolean isDeleted = articleFile.delete();
         if (!isDeleted) throw new Exception("Cannot delete file");
     }
