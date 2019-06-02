@@ -50,6 +50,6 @@ public class ArticleRepository {
         return article;
     }
 
-    public void delete(String id) {
+    public void deleteById(String id) {
     }
 }
