@@ -4,7 +4,6 @@ import io.github.daengdaenglee.javabomboardwas.entities.Article;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
