@@ -75,4 +75,23 @@ public class ArticleServiceTests {
         // then
         assertThat(received).isEqualTo(expected);
     }
+
+    @Test
+    public void getArticleByIdSuccessReturnOneArticle() throws IOException {
+        // given
+        String id = "12345";
+        Article expected = Article.builder()
+                .id(id)
+                .attributes(Attributes.builder().build())
+                .links(new Links("/articles/" + id))
+                .build();
+
+        given(articleRepository.selectById(id)).willReturn(expected);
+
+        // when
+        Article received = articleRepository.selectById(id);
+
+        // then
+        assertThat(received).isEqualTo(expected);
+    }
 }
