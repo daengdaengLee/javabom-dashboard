@@ -2,12 +2,14 @@ package io.github.daengdaenglee.javabomboardwas.entities.articles;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
 @Builder
+@Getter
+@Setter
 public class Article {
-    @Builder.Default private final String type = "articles";
-    private final String id;
-    private final Attributes attributes;
-    private final Links links;
+    @Builder.Default String type = "articles";
+    String id;
+    Attributes attributes;
+    Links links;
 }

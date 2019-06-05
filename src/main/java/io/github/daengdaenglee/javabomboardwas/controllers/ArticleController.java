@@ -54,7 +54,8 @@ public class ArticleController {
     public ResponseEntity<DataResponse<Article>> createArticle(
             @RequestBody DataRequest<Article> requestBody
     ) throws IOException {
-        Article article = articleService.makeNewArticle(requestBody.getData());
+        Article article = requestBody.getData();
+        article = articleService.makeNewArticle(article);
         article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
 
         DataResponse<Article> dataResponse = new DataResponse<>(article);
@@ -70,7 +71,9 @@ public class ArticleController {
         Article article = requestBody.getData();
         String self = article.getLinks().getSelf();
         article.getLinks().setSelf(self.replace("/api/v1", ""));
+
         article = articleService.changeArticle(article);
+
         article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
 
         DataResponse<Article> dataResponse = new DataResponse<>(article);

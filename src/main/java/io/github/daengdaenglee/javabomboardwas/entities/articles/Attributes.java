@@ -2,10 +2,12 @@ package io.github.daengdaenglee.javabomboardwas.entities.articles;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Builder
 @Getter
+@Setter
 public class Attributes {
-    private final String title;
-    private final String body;
+    String title;
+    String body;
 }

@@ -7,11 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Links {
-    private String self;
+    String self;
 
-    public Links(
-           @JsonProperty("self") String self
-    ) {
+    public Links(@JsonProperty("self") String self) {
         this.self = self;
     }
 }
