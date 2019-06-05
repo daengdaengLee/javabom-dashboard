@@ -22,32 +22,24 @@ public class ArticleController {
     public ArticleService articleService;
 
     @GetMapping("/articles")
-    public Map<String, List<ArticleJSON>> listAllArticles() {
-        Map<String, List<ArticleJSON>> response = new HashMap<>();
+    public ResponseEntity<DataResponse<List<Article>>> listAllArticles() throws IOException {
+        List<Article> articles = articleService.getAllArticles().stream()
+                .map(article -> {
+                    article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
+                    return article;
+                })
+                .collect(Collectors.toList());
+        DataResponse<List<Article>> dataResponse = new DataResponse<>(articles);
 
-        try {
-            List<ArticleJSON> allArticles = articleService.getAllArticles().stream()
-                    .map(ArticleJSON::fromArticle)
-                    .collect(Collectors.toList());
-            response.put("data", allArticles);
-        } catch (Exception e) {
-        }
-
-        return response;
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
 
     @GetMapping("/articles/{articleId}")
-    public Map<String, ArticleJSON> readArticle(@PathVariable String articleId) {
-        Map<String, ArticleJSON> response = new HashMap<>();
+    public ResponseEntity<DataResponse<Article>> readArticle(@PathVariable String articleId) throws IOException {
+        Article article = articleService.getArticleById(articleId);
+        DataResponse<Article> dataResponse = new DataResponse<>(article);
 
-        try {
-            ArticleJSON articleJSON = ArticleJSON.fromArticle(articleService.getArticleById(articleId));
-            response.put("data", articleJSON);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return response;
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
 
     @PostMapping("/articles")
