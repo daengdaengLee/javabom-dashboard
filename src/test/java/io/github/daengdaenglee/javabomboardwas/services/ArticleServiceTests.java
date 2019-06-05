@@ -89,7 +89,7 @@ public class ArticleServiceTests {
         given(articleRepository.selectById(id)).willReturn(expected);
 
         // when
-        Article received = articleRepository.selectById(id);
+        Article received = articleService.getArticleById(id);
 
         // then
         assertThat(received).isEqualTo(expected);
@@ -114,7 +114,29 @@ public class ArticleServiceTests {
         given(articleRepository.insert(inputArticle)).willReturn(expected);
 
         // when
-        Article received = articleRepository.insert(inputArticle);
+        Article received = articleService.makeNewArticle(inputArticle);
+
+        // then
+        assertThat(received).isEqualTo(expected);
+    }
+
+    @Test
+    public void changeArticleSuccessReturnChangedArticle() throws IOException {
+        // given
+        Article inputArticle = Article.builder()
+                .id("1234")
+                .attributes(Attributes.builder()
+                        .body("This is a test article")
+                        .title("Test article")
+                        .build())
+                .links(new Links("/articles/1234"))
+                .build();
+        Article expected = inputArticle;
+
+        given(articleRepository.update(inputArticle)).willReturn(expected);
+
+        // when
+        Article received = articleService.changeArticle(inputArticle);
 
         // then
         assertThat(received).isEqualTo(expected);
