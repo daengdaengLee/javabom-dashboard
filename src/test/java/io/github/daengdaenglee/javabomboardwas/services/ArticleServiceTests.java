@@ -18,6 +18,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
@@ -143,7 +145,7 @@ public class ArticleServiceTests {
     }
 
     @Test
-    public void deleteArticleByIdSuccess() {
+    public void deleteArticleByIdSuccessCallArticleRepositoryDeleteByIdOnce() {
         // given
         String id = "1234";
 
@@ -151,6 +153,6 @@ public class ArticleServiceTests {
         articleService.deleteArticleById(id);
 
         // then
-        // No Exception
+        verify(articleRepository, times(1)).deleteById(id);
     }
 }
