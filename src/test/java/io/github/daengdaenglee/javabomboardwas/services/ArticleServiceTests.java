@@ -89,7 +89,7 @@ public class ArticleServiceTests {
         given(articleRepository.selectById(id)).willReturn(expected);
 
         // when
-        Article received = articleRepository.selectById(id);
+        Article received = articleService.getArticleById(id);
 
         // then
         assertThat(received).isEqualTo(expected);
@@ -114,9 +114,18 @@ public class ArticleServiceTests {
         given(articleRepository.insert(inputArticle)).willReturn(expected);
 
         // when
-        Article received = articleRepository.insert(inputArticle);
+        Article received = articleService.makeNewArticle(inputArticle);
 
         // then
         assertThat(received).isEqualTo(expected);
+    }
+
+    @Test
+    public void changeArticleSuccessReturnChangedArticle() {
+        // given
+
+        // when
+
+        // then
     }
 }
