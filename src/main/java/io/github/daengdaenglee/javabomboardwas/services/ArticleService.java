@@ -24,7 +24,7 @@ public class ArticleService {
     }
 
     public Article makeNewArticle(Article article) throws IOException {
-        return articleRepository.insert(Article.builder().attributes(article.getAttributes()).build());
+        return articleRepository.insert(article);
     }
 
     public Article changeArticle(Article article) throws IOException {
