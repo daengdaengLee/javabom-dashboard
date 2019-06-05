@@ -1,7 +1,9 @@
 package io.github.daengdaenglee.javabomboardwas.repositories;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.daengdaenglee.javabomboardwas.entities.Article;
+import io.github.daengdaenglee.javabomboardwas.entities.articles.Article;
+import io.github.daengdaenglee.javabomboardwas.entities.articles.Attributes;
+import io.github.daengdaenglee.javabomboardwas.entities.articles.Links;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +30,12 @@ public class ArticleRepository {
         id += 1;
 
         String articleId = Integer.toString(id);
-        article = new Article(articleId, article.title, article.body);
+        article = Article.builder()
+                .id(articleId)
+                .attributes(article.getAttributes())
+                .links(new Links("/articles/" + articleId))
+                .type(article.getType())
+                .build();
 
         String fileContents = new ObjectMapper().writeValueAsString(article);
         FileWriter fileWriter = new FileWriter(storePath + "/" + articleId + ".json", false);
@@ -36,7 +43,7 @@ public class ArticleRepository {
         fileWriter.flush();
         fileWriter.close();
 
-        return new Article(articleId, article.title, article.body);
+        return article;
     }
 
     public Article selectById(String id) throws IOException {
@@ -58,8 +65,8 @@ public class ArticleRepository {
 
         return allArticles.stream()
                 .sorted((a, b) -> {
-                    int id1 = Integer.parseInt(a.id);
-                    int id2 = Integer.parseInt(b.id);
+                    int id1 = Integer.parseInt(a.getId());
+                    int id2 = Integer.parseInt(b.getId());
                     return id1 - id2;
                 })
                 .collect(Collectors.toList());
@@ -67,7 +74,7 @@ public class ArticleRepository {
 
     public Article update(Article article) throws IOException {
         String fileContents = new ObjectMapper().writeValueAsString(article);
-        FileWriter fileWriter = new FileWriter(storePath + "/" + article.id + ".json", false);
+        FileWriter fileWriter = new FileWriter(storePath + "/" + article.getId() + ".json", false);
         fileWriter.write(fileContents);
         fileWriter.flush();
         fileWriter.close();
@@ -75,10 +82,9 @@ public class ArticleRepository {
         return article;
     }
 
-    public void deleteById(String id) throws Exception {
+    public void deleteById(String id) {
         File articleFile = new File(storePath + "/" + id + ".json");
-        boolean isDeleted = articleFile.delete();
-        if (!isDeleted) throw new Exception("Cannot delete file");
+        articleFile.delete();
     }
 
     public String readArticleFileContent(File articleFile) throws IOException {

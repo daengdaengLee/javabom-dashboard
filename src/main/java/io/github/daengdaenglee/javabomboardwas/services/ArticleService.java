@@ -1,6 +1,6 @@
 package io.github.daengdaenglee.javabomboardwas.services;
 
-import io.github.daengdaenglee.javabomboardwas.entities.Article;
+import io.github.daengdaenglee.javabomboardwas.entities.articles.Article;
 import io.github.daengdaenglee.javabomboardwas.repositories.ArticleRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +23,15 @@ public class ArticleService {
         return articleRepository.selectById(id);
     }
 
-    public Article makeNewArticle(String title, String body) throws IOException {
-        return articleRepository.insert(new Article(null, title, body));
+    public Article makeNewArticle(Article article) throws IOException {
+        return articleRepository.insert(Article.builder().attributes(article.getAttributes()).build());
     }
 
     public Article changeArticle(Article article) throws IOException {
         return articleRepository.update(article);
     }
 
-    public void deleteArticleById(String id) throws Exception {
+    public void deleteArticleById(String id) {
         articleRepository.deleteById(id);
     }
 }

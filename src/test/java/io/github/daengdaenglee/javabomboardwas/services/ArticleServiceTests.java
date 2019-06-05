@@ -1,6 +1,8 @@
 package io.github.daengdaenglee.javabomboardwas.services;
 
-import io.github.daengdaenglee.javabomboardwas.entities.Article;
+import io.github.daengdaenglee.javabomboardwas.entities.articles.Article;
+import io.github.daengdaenglee.javabomboardwas.entities.articles.Attributes;
+import io.github.daengdaenglee.javabomboardwas.entities.articles.Links;
 import io.github.daengdaenglee.javabomboardwas.repositories.ArticleRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +38,18 @@ public class ArticleServiceTests {
     @Test
     public void getAllArticlesSuccessReturnMoreThanOneArticle() throws IOException {
         // given
-        Article article1 = new Article("1", "article 1 title", "article 1 body");
-        Article article2 = new Article("2", "article 2 title", "article 2 body");
+        Article article1 = Article.builder()
+                .id("1")
+                .attributes(Attributes.builder().title("article 1 title").body("article 1 body").build())
+                .type("articles")
+                .links(new Links("/articles/1"))
+                .build();
+        Article article2 = Article.builder()
+                .id("2")
+                .attributes(Attributes.builder().title("article 2 title").body("article 2 body").build())
+                .type("articles")
+                .links(new Links("/articles/2"))
+                .build();
 
         List<Article> expected = Arrays.asList(article1, article2);
 

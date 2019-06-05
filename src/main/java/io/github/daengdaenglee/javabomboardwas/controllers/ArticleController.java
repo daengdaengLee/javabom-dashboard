@@ -1,8 +1,12 @@
 package io.github.daengdaenglee.javabomboardwas.controllers;
 
-import io.github.daengdaenglee.javabomboardwas.entities.Article;
+import io.github.daengdaenglee.javabomboardwas.entities.articles.Article;
+import io.github.daengdaenglee.javabomboardwas.entities.requests.DataRequest;
+import io.github.daengdaenglee.javabomboardwas.entities.responses.DataResponse;
 import io.github.daengdaenglee.javabomboardwas.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -18,79 +22,62 @@ public class ArticleController {
     public ArticleService articleService;
 
     @GetMapping("/articles")
-    public Map<String, List<ArticleJSON>> listAllArticles() {
-        Map<String, List<ArticleJSON>> response = new HashMap<>();
+    public ResponseEntity<DataResponse<List<Article>>> listAllArticles() throws IOException {
+        List<Article> articles = articleService.getAllArticles().stream()
+                .map(article -> {
+                    article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
+                    return article;
+                })
+                .collect(Collectors.toList());
+        DataResponse<List<Article>> dataResponse = new DataResponse<>(articles);
 
-        try {
-            List<ArticleJSON> allArticles = articleService.getAllArticles().stream()
-                    .map(ArticleJSON::fromArticle)
-                    .collect(Collectors.toList());
-            response.put("data", allArticles);
-        } catch (Exception e) {
-        }
-
-        return response;
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
 
     @GetMapping("/articles/{articleId}")
-    public Map<String, ArticleJSON> readArticle(@PathVariable String articleId) {
-        Map<String, ArticleJSON> response = new HashMap<>();
+    public ResponseEntity<DataResponse<Article>> readArticle(@PathVariable String articleId) throws IOException {
+        Article article = articleService.getArticleById(articleId);
+        DataResponse<Article> dataResponse = new DataResponse<>(article);
 
-        try {
-            ArticleJSON articleJSON = ArticleJSON.fromArticle(articleService.getArticleById(articleId));
-            response.put("data", articleJSON);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return response;
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
 
     @PostMapping("/articles")
-    public Map<String, ArticleJSON> createArticle(@RequestBody Map<String, ArticleJSON> requestBody) {
-        Map<String, ArticleJSON> response = new HashMap<>();
+    public ResponseEntity<DataResponse<Article>> createArticle(
+            @RequestBody DataRequest<Article> requestBody
+    ) throws IOException {
+        Article article = requestBody.getData();
+        article = articleService.makeNewArticle(article);
+        article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
 
-        ArticleJSON articleJSON = requestBody.get("data");
-        String title = articleJSON.attributes.get("title");
-        String body = articleJSON.attributes.get("body");
+        DataResponse<Article> dataResponse = new DataResponse<>(article);
 
-        try {
-            Article article = articleService.makeNewArticle(title, body);
-            response.put("data", ArticleJSON.fromArticle(article));
-        } catch (IOException e) {
-        }
-
-        return response;
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
 
     @PutMapping("/articles/{articleId}")
-    public Map<String, ArticleJSON> updateArticle(@PathVariable String articleId, @RequestBody Map<String, ArticleJSON> requestBody) {
-        Map<String, ArticleJSON> response = new HashMap<>();
+    public ResponseEntity<DataResponse<Article>> updateArticle(
+            @PathVariable String articleId,
+            @RequestBody DataRequest<Article> requestBody
+    ) throws IOException {
+        Article article = requestBody.getData();
+        String self = article.getLinks().getSelf();
+        article.getLinks().setSelf(self.replace("/api/v1", ""));
 
-        ArticleJSON articleJSON = requestBody.get("data");
-        String title = articleJSON.attributes.get("title");
-        String body = articleJSON.attributes.get("body");
+        article = articleService.changeArticle(article);
 
-        try {
-            Article article = new Article(articleId, title, body);
-            article = articleService.changeArticle(article);
+        article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
 
-            response.put("data", ArticleJSON.fromArticle(article));
-        } catch (Exception e) {
+        DataResponse<Article> dataResponse = new DataResponse<>(article);
 
-        }
-
-        return response;
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/articles/{articleId}")
-    public Object deleteArticle(@PathVariable String articleId) {
-        try {
-            articleService.deleteArticleById(articleId);
-        } catch (Exception e) {
-        }
+    public ResponseEntity deleteArticle(@PathVariable String articleId) {
+        articleService.deleteArticleById(articleId);
 
-        return null;
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     public static class ArticleJSON {
@@ -102,10 +89,10 @@ public class ArticleController {
         public static ArticleJSON fromArticle(Article article) {
             ArticleJSON articleJSON = new ArticleJSON();
 
-            articleJSON.id = article.id;
-            articleJSON.attributes.put("title", article.title);
-            articleJSON.attributes.put("body", article.body);
-            articleJSON.links.put("self", "/api/v1/articles/" + article.id);
+            articleJSON.id = article.getId();
+            articleJSON.attributes.put("title", article.getAttributes().getTitle());
+            articleJSON.attributes.put("body", article.getAttributes().getBody());
+            articleJSON.links.put("self", "/api/v1/articles/" + article.getId());
 
             return articleJSON;
         }
