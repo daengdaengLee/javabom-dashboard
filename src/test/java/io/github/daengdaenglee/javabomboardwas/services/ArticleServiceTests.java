@@ -141,4 +141,16 @@ public class ArticleServiceTests {
         // then
         assertThat(received).isEqualTo(expected);
     }
+
+    @Test
+    public void deleteArticleByIdSuccess() {
+        // given
+        String id = "1234";
+
+        // when
+        articleService.deleteArticleById(id);
+
+        // then
+        // No Exception
+    }
 }
