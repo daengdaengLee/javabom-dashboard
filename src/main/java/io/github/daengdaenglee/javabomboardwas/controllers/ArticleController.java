@@ -1,9 +1,8 @@
 package io.github.daengdaenglee.javabomboardwas.controllers;
 
 import io.github.daengdaenglee.javabomboardwas.entities.articles.Article;
-import io.github.daengdaenglee.javabomboardwas.entities.articles.Attributes;
-import io.github.daengdaenglee.javabomboardwas.entities.articles.Links;
-import io.github.daengdaenglee.javabomboardwas.entities.responses.ArticleData;
+import io.github.daengdaenglee.javabomboardwas.entities.requests.DataRequest;
+import io.github.daengdaenglee.javabomboardwas.entities.responses.DataResponse;
 import io.github.daengdaenglee.javabomboardwas.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,21 +51,21 @@ public class ArticleController {
     }
 
     @PostMapping("/articles")
-    public ResponseEntity<ArticleData> createArticle(
-            @RequestBody ArticleData requestBody
+    public ResponseEntity<DataResponse<Article>> createArticle(
+            @RequestBody DataRequest<Article> requestBody
     ) throws IOException {
         Article article = articleService.makeNewArticle(requestBody.getData());
         article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
 
-        ArticleData articleData = new ArticleData(article);
+        DataResponse<Article> dataResponse = new DataResponse<>(article);
 
-        return new ResponseEntity<>(articleData, HttpStatus.OK);
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
 
     @PutMapping("/articles/{articleId}")
-    public ResponseEntity<ArticleData> updateArticle(
+    public ResponseEntity<DataResponse<Article>> updateArticle(
             @PathVariable String articleId,
-            @RequestBody ArticleData requestBody
+            @RequestBody DataRequest<Article> requestBody
     ) throws IOException {
         Article article = requestBody.getData();
         String self = article.getLinks().getSelf();
@@ -74,9 +73,9 @@ public class ArticleController {
         article = articleService.changeArticle(article);
         article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
 
-        ArticleData articleData = new ArticleData(article);
+        DataResponse<Article> dataResponse = new DataResponse<>(article);
 
-        return new ResponseEntity<>(articleData, HttpStatus.OK);
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/articles/{articleId}")
