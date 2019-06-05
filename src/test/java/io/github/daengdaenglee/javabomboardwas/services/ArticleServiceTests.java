@@ -121,11 +121,24 @@ public class ArticleServiceTests {
     }
 
     @Test
-    public void changeArticleSuccessReturnChangedArticle() {
+    public void changeArticleSuccessReturnChangedArticle() throws IOException {
         // given
+        Article inputArticle = Article.builder()
+                .id("1234")
+                .attributes(Attributes.builder()
+                        .body("This is a test article")
+                        .title("Test article")
+                        .build())
+                .links(new Links("/articles/1234"))
+                .build();
+        Article expected = inputArticle;
+
+        given(articleRepository.update(inputArticle)).willReturn(expected);
 
         // when
+        Article received = articleService.changeArticle(inputArticle);
 
         // then
+        assertThat(received).isEqualTo(expected);
     }
 }
