@@ -94,4 +94,29 @@ public class ArticleServiceTests {
         // then
         assertThat(received).isEqualTo(expected);
     }
+
+    @Test
+    public void makeNewArticleSuccessReturnCreatedArticle() throws IOException {
+        // given
+        Attributes attributes = Attributes.builder()
+                .body("This is a test article.")
+                .title("Test article")
+                .build();
+        Article inputArticle = Article.builder()
+                .attributes(attributes)
+                .build();
+        Article expected = Article.builder()
+                .id("1234")
+                .attributes(attributes)
+                .links(new Links("/articles/1234"))
+                .build();
+
+        given(articleRepository.insert(inputArticle)).willReturn(expected);
+
+        // when
+        Article received = articleRepository.insert(inputArticle);
+
+        // then
+        assertThat(received).isEqualTo(expected);
+    }
 }
