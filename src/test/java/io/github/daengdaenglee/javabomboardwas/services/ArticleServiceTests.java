@@ -11,11 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -75,6 +77,22 @@ public class ArticleServiceTests {
 
         // then
         assertThat(received).isEqualTo(expected);
+    }
+
+    @Test
+    public void getAllArticlesFailThrowIOException() throws Exception {
+        // given
+        IOException expected = new IOException();
+
+        given(articleRepository.selectAll()).willThrow(expected);
+
+        // when
+        Throwable received = catchThrowable(() -> {
+            articleService.getAllArticles();
+        });
+
+        // then
+        assertThat(received).isInstanceOf(IOException.class);
     }
 
     @Test
