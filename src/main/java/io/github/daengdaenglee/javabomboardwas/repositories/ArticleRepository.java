@@ -2,16 +2,17 @@ package io.github.daengdaenglee.javabomboardwas.repositories;
 
 import io.github.daengdaenglee.javabomboardwas.entities.articles.Article;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ArticleRepository {
-    Article insert(Article article) throws Exception;
+    Article insert(Article article) throws IOException;
 
-    Article selectById(String id) throws Exception;
+    Article selectById(String id) throws IOException;
 
-    List<Article> selectAll() throws Exception;
+    List<Article> selectAll() throws IOException;
 
-    Article update(Article article) throws Exception;
+    Article update(Article article) throws IOException;
 
-    Article deleteById(String id) throws Exception;
+    Article deleteById(String id) throws IOException;
 }
