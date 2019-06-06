@@ -115,6 +115,24 @@ public class ArticleServiceTests {
     }
 
     @Test
+    public void getArticleByIdFailThrowIOException() throws Exception {
+        // given
+        String id = "1234";
+        IOException expected = new IOException("Failed to read file");
+
+        given(articleRepository.selectById(id)).willThrow(expected);
+
+        // when
+        Throwable received = catchThrowable(() -> {
+            articleService.getArticleById(id);
+        });
+
+        // then
+        assertThat(received).isInstanceOf(expected.getClass());
+        assertThat(received).hasMessage(expected.getMessage());
+    }
+
+    @Test
     public void makeNewArticleSuccessReturnCreatedArticle() throws Exception {
         // given
         Attributes attributes = Attributes.builder()
