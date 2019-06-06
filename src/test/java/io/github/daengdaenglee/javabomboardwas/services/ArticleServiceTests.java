@@ -19,8 +19,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
@@ -87,9 +85,7 @@ public class ArticleServiceTests {
         given(articleRepository.selectAll()).willThrow(expected);
 
         // when
-        Throwable received = catchThrowable(() -> {
-            articleService.getAllArticles();
-        });
+        Throwable received = catchThrowable(() -> articleService.getAllArticles());
 
         // then
         assertThat(received).isInstanceOf(expected.getClass());
@@ -124,9 +120,7 @@ public class ArticleServiceTests {
         given(articleRepository.selectById(id)).willThrow(expected);
 
         // when
-        Throwable received = catchThrowable(() -> {
-            articleService.getArticleById(id);
-        });
+        Throwable received = catchThrowable(() -> articleService.getArticleById(id));
 
         // then
         assertThat(received).isInstanceOf(expected.getClass());
