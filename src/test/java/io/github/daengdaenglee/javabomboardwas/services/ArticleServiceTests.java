@@ -144,14 +144,21 @@ public class ArticleServiceTests {
     }
 
     @Test
-    public void deleteArticleByIdSuccessCallArticleRepositoryDeleteByIdOnce() throws Exception {
+    public void deleteArticleByIdSuccessReturnDeletedArticle() throws Exception {
         // given
         String id = "1234";
+        Article expected = Article.builder()
+                .id(id)
+                .attributes(Attributes.builder().title("Test article").body("This is a test article").build())
+                .links(new Links("/articles/" + id))
+                .build();
+
+        given(articleRepository.deleteById(id)).willReturn(expected);
 
         // when
-        articleService.deleteArticleById(id);
+        Article received = articleService.deleteArticleById(id);
 
         // then
-        verify(articleRepository, times(1)).deleteById(id);
+        assertThat(received).isEqualTo(expected);
     }
 }
