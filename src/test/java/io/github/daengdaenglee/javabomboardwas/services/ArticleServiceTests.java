@@ -82,7 +82,7 @@ public class ArticleServiceTests {
     @Test
     public void getAllArticlesFailThrowIOException() throws Exception {
         // given
-        IOException expected = new IOException();
+        IOException expected = new IOException("Failed to read file");
 
         given(articleRepository.selectAll()).willThrow(expected);
 
@@ -92,7 +92,8 @@ public class ArticleServiceTests {
         });
 
         // then
-        assertThat(received).isInstanceOf(IOException.class);
+        assertThat(received).isInstanceOf(expected.getClass());
+        assertThat(received).hasMessage(expected.getMessage());
     }
 
     @Test
