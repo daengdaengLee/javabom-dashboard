@@ -1,37 +1,17 @@
 package io.github.daengdaenglee.javabomboardwas.services;
 
 import io.github.daengdaenglee.javabomboardwas.entities.articles.Article;
-import io.github.daengdaenglee.javabomboardwas.repositories.ArticleRepository;
-import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
-@Service
-public class ArticleService {
-    public final ArticleRepository articleRepository;
+public interface ArticleService {
+    List<Article> getAllArticles() throws Exception;
 
-    public ArticleService(ArticleRepository articleRepository) {
-        this.articleRepository = articleRepository;
-    }
+    Article getArticleById(String id) throws Exception;
 
-    public List<Article> getAllArticles() throws IOException {
-        return articleRepository.selectAll();
-    }
+    Article makeNewArticle(Article article) throws Exception;
 
-    public Article getArticleById(String id) throws IOException {
-        return articleRepository.selectById(id);
-    }
+    Article changeArticle(Article article) throws Exception;
 
-    public Article makeNewArticle(Article article) throws IOException {
-        return articleRepository.insert(article);
-    }
-
-    public Article changeArticle(Article article) throws IOException {
-        return articleRepository.update(article);
-    }
-
-    public void deleteArticleById(String id) {
-        articleRepository.deleteById(id);
-    }
+    Article deleteArticleById(String id) throws Exception;
 }

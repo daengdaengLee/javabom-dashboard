@@ -82,9 +82,14 @@ public class ArticleRepository {
         return article;
     }
 
-    public void deleteById(String id) {
+    public Article deleteById(String id) throws IOException {
         File articleFile = new File(storePath + "/" + id + ".json");
-        articleFile.delete();
+        String json = readArticleFileContent(articleFile);
+        Article article = new ObjectMapper().readerFor(Article.class).readValue(json);
+
+        boolean isDeleted = articleFile.delete();
+
+        return isDeleted ? article : null;
     }
 
     public String readArticleFileContent(File articleFile) throws IOException {
