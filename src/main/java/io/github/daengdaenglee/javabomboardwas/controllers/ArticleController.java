@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,7 @@ public class ArticleController {
     public ArticleService articleService;
 
     @GetMapping("/articles")
-    public ResponseEntity<DataResponse<List<Article>>> listAllArticles() throws IOException {
+    public ResponseEntity<DataResponse<List<Article>>> listAllArticles() throws Exception {
         List<Article> articles = articleService.getAllArticles().stream()
                 .map(article -> {
                     article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
@@ -35,7 +34,7 @@ public class ArticleController {
     }
 
     @GetMapping("/articles/{articleId}")
-    public ResponseEntity<DataResponse<Article>> readArticle(@PathVariable String articleId) throws IOException {
+    public ResponseEntity<DataResponse<Article>> readArticle(@PathVariable String articleId) throws Exception {
         Article article = articleService.getArticleById(articleId);
         DataResponse<Article> dataResponse = new DataResponse<>(article);
 
@@ -45,7 +44,7 @@ public class ArticleController {
     @PostMapping("/articles")
     public ResponseEntity<DataResponse<Article>> createArticle(
             @RequestBody DataRequest<Article> requestBody
-    ) throws IOException {
+    ) throws Exception {
         Article article = requestBody.getData();
         article = articleService.makeNewArticle(article);
         article.getLinks().setSelf("/api/v1" + article.getLinks().getSelf());
@@ -59,7 +58,7 @@ public class ArticleController {
     public ResponseEntity<DataResponse<Article>> updateArticle(
             @PathVariable String articleId,
             @RequestBody DataRequest<Article> requestBody
-    ) throws IOException {
+    ) throws Exception {
         Article article = requestBody.getData();
         String self = article.getLinks().getSelf();
         article.getLinks().setSelf(self.replace("/api/v1", ""));
@@ -74,7 +73,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/articles/{articleId}")
-    public ResponseEntity deleteArticle(@PathVariable String articleId) {
+    public ResponseEntity deleteArticle(@PathVariable String articleId) throws Exception {
         articleService.deleteArticleById(articleId);
 
         return new ResponseEntity(HttpStatus.OK);

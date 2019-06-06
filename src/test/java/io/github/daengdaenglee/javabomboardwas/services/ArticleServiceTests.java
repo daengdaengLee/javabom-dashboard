@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +22,7 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
-        ArticleService.class
+        ArticleServiceImpl.class
 })
 public class ArticleServiceTests {
     @MockBean
@@ -34,11 +33,11 @@ public class ArticleServiceTests {
 
     @Test
     public void constructorWithArticleRepository() {
-        new ArticleService(articleRepository);
+        new ArticleServiceImpl(articleRepository);
     }
 
     @Test
-    public void getAllArticlesSuccessReturnMoreThanOneArticle() throws IOException {
+    public void getAllArticlesSuccessReturnMoreThanOneArticle() throws Exception {
         // given
         Article article1 = Article.builder()
                 .id("1")
@@ -65,7 +64,7 @@ public class ArticleServiceTests {
     }
 
     @Test
-    public void getAllArticlesSuccessReturnEmptyArticleList() throws IOException {
+    public void getAllArticlesSuccessReturnEmptyArticleList() throws Exception {
         // given
         List<Article> expected = new ArrayList<>();
 
@@ -79,7 +78,7 @@ public class ArticleServiceTests {
     }
 
     @Test
-    public void getArticleByIdSuccessReturnOneArticle() throws IOException {
+    public void getArticleByIdSuccessReturnOneArticle() throws Exception {
         // given
         String id = "12345";
         Article expected = Article.builder()
@@ -98,7 +97,7 @@ public class ArticleServiceTests {
     }
 
     @Test
-    public void makeNewArticleSuccessReturnCreatedArticle() throws IOException {
+    public void makeNewArticleSuccessReturnCreatedArticle() throws Exception {
         // given
         Attributes attributes = Attributes.builder()
                 .body("This is a test article.")
@@ -123,7 +122,7 @@ public class ArticleServiceTests {
     }
 
     @Test
-    public void changeArticleSuccessReturnChangedArticle() throws IOException {
+    public void changeArticleSuccessReturnChangedArticle() throws Exception {
         // given
         Article inputArticle = Article.builder()
                 .id("1234")
@@ -145,7 +144,7 @@ public class ArticleServiceTests {
     }
 
     @Test
-    public void deleteArticleByIdSuccessCallArticleRepositoryDeleteByIdOnce() {
+    public void deleteArticleByIdSuccessCallArticleRepositoryDeleteByIdOnce() throws Exception {
         // given
         String id = "1234";
 
