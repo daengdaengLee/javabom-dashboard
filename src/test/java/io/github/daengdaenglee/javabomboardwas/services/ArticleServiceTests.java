@@ -233,4 +233,19 @@ public class ArticleServiceTests {
         // then
         assertThat(received).isEqualTo(expected);
     }
+
+    @Test
+    public void deleteArticleByIdFailThrowIOException() throws Exception {
+        // given
+        String id = "1234";
+        IOException expected = new IOException();
+
+        given(articleRepository.deleteById(id)).willThrow(expected);
+
+        // when
+        Throwable received = catchThrowable(() -> articleService.deleteArticleById(id));
+
+        // then
+        assertThat(received).isEqualTo(expected);
+    }
 }
