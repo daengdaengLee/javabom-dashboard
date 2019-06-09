@@ -194,6 +194,28 @@ public class ArticleServiceTests {
     }
 
     @Test
+    public void changeArticleFailThrowIOException() throws Exception {
+        // given
+        Article inputArticle = Article.builder()
+                .id("1234")
+                .attributes(Attributes.builder()
+                        .body("This is a test article.")
+                        .title("Test article")
+                        .build())
+                .links(new Links("/articles/1234"))
+                .build();
+        IOException expected = new IOException();
+
+        given(articleRepository.update(inputArticle)).willThrow(expected);
+
+        // when
+        Throwable received = catchThrowable(() -> articleService.changeArticle(inputArticle));
+
+        // then
+        assertThat(received).isEqualTo(expected);
+    }
+
+    @Test
     public void deleteArticleByIdSuccessReturnDeletedArticle() throws Exception {
         // given
         String id = "1234";
