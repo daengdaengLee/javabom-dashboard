@@ -88,8 +88,7 @@ public class ArticleServiceTests {
         Throwable received = catchThrowable(() -> articleService.getAllArticles());
 
         // then
-        assertThat(received).isInstanceOf(expected.getClass());
-        assertThat(received).hasMessage(expected.getMessage());
+        assertThat(received).isEqualTo(expected);
     }
 
     @Test
