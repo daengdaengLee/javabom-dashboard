@@ -153,6 +153,27 @@ public class ArticleServiceTests {
     }
 
     @Test
+    public void makeNewArticleFailThrowIOException() throws Exception {
+        // given
+        Article inputArticle = Article.builder()
+                .attributes(Attributes.builder()
+                        .title("Test Article")
+                        .body("This is a test article")
+                        .build())
+                .build();
+
+        IOException expected = new IOException();
+
+        given(articleRepository.insert(inputArticle)).willThrow(expected);
+
+        // when
+        Throwable received = catchThrowable(() -> articleService.makeNewArticle(inputArticle));
+
+        // then
+        assertThat(received).isEqualTo(expected);
+    }
+
+    @Test
     public void changeArticleSuccessReturnChangedArticle() throws Exception {
         // given
         Article inputArticle = Article.builder()
