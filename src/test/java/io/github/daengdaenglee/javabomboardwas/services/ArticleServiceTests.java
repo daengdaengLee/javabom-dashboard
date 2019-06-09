@@ -80,7 +80,7 @@ public class ArticleServiceTests {
     @Test
     public void getAllArticlesFailThrowIOException() throws Exception {
         // given
-        IOException expected = new IOException("Failed to read file");
+        IOException expected = new IOException();
 
         given(articleRepository.selectAll()).willThrow(expected);
 
@@ -114,7 +114,7 @@ public class ArticleServiceTests {
     public void getArticleByIdFailThrowIOException() throws Exception {
         // given
         String id = "1234";
-        IOException expected = new IOException("Failed to read file");
+        IOException expected = new IOException();
 
         given(articleRepository.selectById(id)).willThrow(expected);
 
@@ -122,8 +122,7 @@ public class ArticleServiceTests {
         Throwable received = catchThrowable(() -> articleService.getArticleById(id));
 
         // then
-        assertThat(received).isInstanceOf(expected.getClass());
-        assertThat(received).hasMessage(expected.getMessage());
+        assertThat(received).isEqualTo(expected);
     }
 
     @Test
