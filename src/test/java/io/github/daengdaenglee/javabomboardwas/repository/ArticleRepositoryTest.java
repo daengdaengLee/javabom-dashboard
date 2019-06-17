@@ -33,6 +33,8 @@ public class ArticleRepositoryTest {
         // then
         assertThat(output.getAttributes()).isEqualTo(input.getAttributes());
         assertThat(output.getId()).isEqualTo(output.getPk().toString());
-        assertThat(output.getLinks().getSelf()).isEqualTo("/articles/" + output.getId());
+        assertThat(output.getLinks().getSelf()).isEqualTo(
+                Link.builder().self("/articles/" + output.getId()).build().getSelf()
+        );
     }
 }
