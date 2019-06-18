@@ -1,8 +1,8 @@
 package io.github.daengdaenglee.javabomboardwas.repository;
 
-import io.github.daengdaenglee.javabomboardwas.entity.article.article.Article;
-import io.github.daengdaenglee.javabomboardwas.entity.article.article.Attribute;
-import io.github.daengdaenglee.javabomboardwas.entity.article.article.Link;
+import io.github.daengdaenglee.javabomboardwas.entity.article.Article;
+import io.github.daengdaenglee.javabomboardwas.entity.article.Attribute;
+import io.github.daengdaenglee.javabomboardwas.entity.article.Link;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

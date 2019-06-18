@@ -1,4 +1,4 @@
-package io.github.daengdaenglee.javabomboardwas.entity.article.article;
+package io.github.daengdaenglee.javabomboardwas.entity.article;
 
 import lombok.*;
 
