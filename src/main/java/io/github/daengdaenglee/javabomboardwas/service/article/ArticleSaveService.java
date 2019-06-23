@@ -24,6 +24,10 @@ public class ArticleSaveService {
 
     public Mono<ArticleJSON> create(final ArticleJSON articleJSON) {
         return Mono.justOrEmpty(articleJSON)
+                .map(json -> {
+                    json.setId(null);
+                    return json;
+                })
                 .map(articleCodec::fromModelToEntity)
                 .map(articleRepository::save)
                 .map(articleCodec::fromEntityToModel);
