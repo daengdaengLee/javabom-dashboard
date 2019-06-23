@@ -13,8 +13,8 @@ import javax.persistence.*;
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "primary_key", updatable = false)
-    private Long pk;
+    @Column(name = "id", updatable = false)
+    private Long id;
 
     @Embedded
     @AttributeOverrides({
@@ -23,35 +23,9 @@ public class Article {
     })
     private Attribute attributes;
 
-    @Transient
-    final private String type = "articles";
-
-    @Transient
-    private Link links;
-
-    @Transient
-    private String id;
-
     @Builder
-    public Article(Long pk, Attribute attributes) {
-        this.pk = pk;
+    public Article(Long id, Attribute attributes) {
+        this.id = id;
         this.attributes = attributes;
-    }
-
-    @Transient
-    public Link getLinks() {
-        String self = new StringBuffer()
-                .append("/")
-                .append(this.type)
-                .append("/")
-                .append(this.getId())
-                .toString();
-
-        return Link.builder().self(self).build();
-    }
-
-    @Transient
-    public String getId() {
-        return this.pk.toString();
     }
 }
