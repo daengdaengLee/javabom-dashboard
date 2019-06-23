@@ -43,7 +43,7 @@ public class ArticleDeleteServiceTest {
     }
 
     @Test
-    public void deleteById_withStringIdOfExistArticle_SuccessWithMonoEmpty() {
+    public void deleteById_withStringIdOfExistArticle_successWithMonoEmpty() {
         // given
         when(articleRepository.findById(givenIdLong1)).thenReturn(Optional.of(givenArticle1));
 
@@ -57,7 +57,7 @@ public class ArticleDeleteServiceTest {
     }
 
     @Test
-    public void deleteById_withStringIdOfNotExistArticle_SuccessWithMonoEmpty() {
+    public void deleteById_withStringIdOfNotExistArticle_successWithMonoEmpty() {
         // given
         when(articleRepository.findById(givenIdLong1)).thenReturn(Optional.empty());
 
@@ -71,7 +71,7 @@ public class ArticleDeleteServiceTest {
     }
 
     @Test
-    public void deleteById_withStringIdCantBoLong_FailWithNumberFormatException() {
+    public void deleteById_withStringIdCantBoLong_failWithNumberFormatException() {
         // given
         String wrongId = "ABC";
 
