@@ -5,6 +5,7 @@ import io.github.daengdaenglee.javabomboardwas.constant.ArticleConstant;
 import io.github.daengdaenglee.javabomboardwas.constant.CommonConstant;
 import io.github.daengdaenglee.javabomboardwas.entity.article.Article;
 import io.github.daengdaenglee.javabomboardwas.entity.article.Attribute;
+import io.github.daengdaenglee.javabomboardwas.exception.article.ArticleNotFoundException;
 import io.github.daengdaenglee.javabomboardwas.model.article.ArticleJSON;
 import io.github.daengdaenglee.javabomboardwas.model.article.AttributesJSON;
 import io.github.daengdaenglee.javabomboardwas.model.article.LinksJSON;
@@ -16,10 +17,12 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 
@@ -81,7 +84,7 @@ public class ArticleFindServiceTest {
     }
 
     @Test
-    public void findAll_whenExistArticles_SuccessWithArticleJSONFlux() {
+    public void findAll_whenExistArticles_successWithArticleJSONFlux() {
         // given
         when(articleRepository.findAll()).thenReturn(Arrays.asList(savedArticleEntity1, savedArticleEntity2));
         when(articleCodec.fromEntityToModel(savedArticleEntity1)).thenReturn(tranformedArticle1);
@@ -99,7 +102,7 @@ public class ArticleFindServiceTest {
     }
 
     @Test
-    public void findAll_whenNoExistArticle_SuccessWithEmptyFlux() {
+    public void findAll_whenNoExistArticle_successWithEmptyFlux() {
         // given
         when(articleRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -109,6 +112,54 @@ public class ArticleFindServiceTest {
         // then
         StepVerifier.create(received)
                 .expectComplete()
+                .verify();
+    }
+
+    @Test
+    public void findById_withExistArticleId_successWithArticleJSONMono() {
+        // given
+        when(articleRepository.findById(savedArticleEntity1.getId())).thenReturn(Optional.of(savedArticleEntity1));
+        when(articleCodec.fromEntityToModel(savedArticleEntity1)).thenReturn(tranformedArticle1);
+
+        // when
+        Mono<ArticleJSON> received = articleFindService.findById(savedArticleEntity1.getId().toString());
+
+        // then
+        StepVerifier.create(received)
+                .expectNext(tranformedArticle1)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    public void findById_withNotExistArticleId_failWithArticleNotFoundException() {
+        // given
+        String notExistArticleId = "3";
+        when(articleRepository.findById(Long.valueOf(notExistArticleId))).thenReturn(Optional.empty());
+
+        // when
+        Mono<ArticleJSON> received = articleFindService.findById(notExistArticleId);
+
+        // then
+        StepVerifier.create(received)
+                .expectErrorMatches(exception -> {
+                    if (!(exception instanceof ArticleNotFoundException)) return false;
+                    return ((ArticleNotFoundException) exception).getArticleId().equals(notExistArticleId);
+                })
+                .verify();
+    }
+
+    @Test
+    public void findById_withIdCantBeLong_failWithNumberFormatException() {
+        // given
+        String wrongId = "ABC";
+
+        // when
+        Mono<ArticleJSON> received = articleFindService.findById(wrongId);
+
+        // then
+        StepVerifier.create(received)
+                .expectError(NumberFormatException.class)
                 .verify();
     }
 }
