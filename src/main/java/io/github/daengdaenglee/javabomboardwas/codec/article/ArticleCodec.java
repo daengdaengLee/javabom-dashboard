@@ -1,5 +1,7 @@
 package io.github.daengdaenglee.javabomboardwas.codec.article;
 
+import io.github.daengdaenglee.javabomboardwas.constant.ArticleConstant;
+import io.github.daengdaenglee.javabomboardwas.constant.CommonConstant;
 import io.github.daengdaenglee.javabomboardwas.entity.article.Article;
 import io.github.daengdaenglee.javabomboardwas.entity.article.Attribute;
 import io.github.daengdaenglee.javabomboardwas.model.article.ArticleJSON;
@@ -19,10 +21,12 @@ public class ArticleCodec {
                 .content(content)
                 .build();
 
+        final String self = CommonConstant.BASE_PATH + ArticleConstant.BASE_PATH + "/" + articleId;
+
         return ArticleJSON.builder()
                 .id(articleId)
-                .type("articles")
-                .links(new LinksJSON("/api/v1/articles/" + articleId))
+                .type(ArticleConstant.TYPE_ARTICLES)
+                .links(new LinksJSON(self))
                 .attributes(attributes)
                 .build();
     }

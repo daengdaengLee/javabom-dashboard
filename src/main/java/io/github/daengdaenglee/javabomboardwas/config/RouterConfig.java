@@ -1,5 +1,7 @@
 package io.github.daengdaenglee.javabomboardwas.config;
 
+import io.github.daengdaenglee.javabomboardwas.constant.ArticleConstant;
+import io.github.daengdaenglee.javabomboardwas.constant.CommonConstant;
 import io.github.daengdaenglee.javabomboardwas.exception.article.ArticleNotFoundException;
 import io.github.daengdaenglee.javabomboardwas.handler.article.ArticleHandler;
 import io.github.daengdaenglee.javabomboardwas.handler.error.ErrorHandler;
@@ -18,6 +20,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Configuration
 @EnableWebFlux
 public class RouterConfig implements WebFluxConfigurer {
+    private final String pathDefault = "";
     private final ArticleHandler articleHandler;
     private final ErrorHandler errorHandler;
 
@@ -38,20 +41,23 @@ public class RouterConfig implements WebFluxConfigurer {
     public RouterFunction<ServerResponse> rootRouter() {
         return RouterFunctions
                 .route()
-                .add(articleRouter())
+                .path(CommonConstant.BASE_PATH, builder -> builder
+                    .add(articleRouter()))
                 .filter(errorRouter())
                 .build();
     }
 
     private RouterFunction<ServerResponse> articleRouter() {
+        final String pathWithArticleId = "/{" + ArticleConstant.PATH_VAR_ARTICLE_ID + "}";
+
         return RouterFunctions
                 .route()
-                .path("/api/v1/articles", builder -> builder
-                        .GET("", articleHandler::listAllArticles)
-                        .GET("/{articleId}", articleHandler::readArticle)
-                        .POST("", articleHandler::createArticle)
-                        .PUT("/{articleId}", articleHandler::updateArticle)
-                        .DELETE("/{articleId}", articleHandler::deleteArticle))
+                .path(ArticleConstant.BASE_PATH, builder -> builder
+                        .GET(pathDefault, articleHandler::listAllArticles)
+                        .GET(pathWithArticleId, articleHandler::readArticle)
+                        .POST(pathDefault, articleHandler::createArticle)
+                        .PUT(pathWithArticleId, articleHandler::updateArticle)
+                        .DELETE(pathWithArticleId, articleHandler::deleteArticle))
                 .build();
     }
 

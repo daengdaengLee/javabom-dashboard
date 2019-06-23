@@ -1,5 +1,6 @@
 package io.github.daengdaenglee.javabomboardwas.handler.article;
 
+import io.github.daengdaenglee.javabomboardwas.constant.ArticleConstant;
 import io.github.daengdaenglee.javabomboardwas.model.container.DataContainer;
 import io.github.daengdaenglee.javabomboardwas.model.article.ArticleJSON;
 import io.github.daengdaenglee.javabomboardwas.service.article.ArticleDeleteService;
@@ -39,7 +40,7 @@ public class ArticleHandler {
     }
 
     public Mono<ServerResponse> readArticle(final ServerRequest request) {
-        final String articleId = request.pathVariable("articleId");
+        final String articleId = request.pathVariable(ArticleConstant.PATH_VAR_ARTICLE_ID);
 
         return Mono.justOrEmpty(articleId)
                 .flatMap(articleFindService::findById)
@@ -58,7 +59,7 @@ public class ArticleHandler {
     }
 
     public Mono<ServerResponse> updateArticle(final ServerRequest request) {
-        final String articleId = request.pathVariable("articleId");
+        final String articleId = request.pathVariable(ArticleConstant.PATH_VAR_ARTICLE_ID);
 
         return request.bodyToMono(
                 new ParameterizedTypeReference<DataContainer<ArticleJSON>>() {
@@ -70,7 +71,7 @@ public class ArticleHandler {
     }
 
     public Mono<ServerResponse> deleteArticle(final ServerRequest request) {
-        final String articleId = request.pathVariable("articleId");
+        final String articleId = request.pathVariable(ArticleConstant.PATH_VAR_ARTICLE_ID);
 
         return Mono.justOrEmpty(articleId)
                 .flatMap(articleDeleteService::deleteById)
