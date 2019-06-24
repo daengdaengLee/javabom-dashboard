@@ -18,6 +18,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -61,12 +63,49 @@ public class ArticleSaveServiceTest {
     @Test
     public void create_withValidArticleJSON_successWithArticleJSONMono() {
         // given
+        articleJSON1.setId(null);
+
         when(articleCodec.fromModelToEntity(any(ArticleJSON.class))).thenReturn(article1);
         when(articleRepository.save(any(Article.class))).thenReturn(article1);
         when(articleCodec.fromEntityToModel(article1)).thenReturn(articleJSON1);
 
         // when
         Mono<ArticleJSON> received = articleSaveService.create(articleJSON1);
+
+        // then
+        StepVerifier.create(received)
+                .expectNext(articleJSON1)
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    public void update_withChangedTitle_successWithArticleJSONMono() {
+        // given
+        String articleIdStr = articleJSON1.getId();
+        Long articleIdLong = article1.getId();
+
+        String changedTitle = "Changed title";
+        ArticleJSON inputArticleJSON = ArticleJSON.builder()
+                .attributes(AttributesJSON.builder()
+                        .title(changedTitle)
+                        .build())
+                .build();
+        Article changedArticle = Article.builder()
+                .id(articleIdLong)
+                .attributes(Attribute.builder()
+                        .title(changedTitle)
+                        .content(article1.getAttributes().getContent())
+                        .build())
+                .build();
+        articleJSON1.getAttributes().setTitle(changedTitle);
+
+        when(articleRepository.findById(articleIdLong)).thenReturn(Optional.of(article1));
+        when(articleRepository.save(any(Article.class))).thenReturn(changedArticle);
+        when(articleCodec.fromEntityToModel(any(Article.class))).thenReturn(articleJSON1);
+
+        // when
+        Mono<ArticleJSON> received = articleSaveService.update(articleIdStr, inputArticleJSON);
 
         // then
         StepVerifier.create(received)
