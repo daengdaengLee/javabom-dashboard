@@ -7,7 +7,6 @@ import javax.persistence.Embeddable;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 @Embeddable
