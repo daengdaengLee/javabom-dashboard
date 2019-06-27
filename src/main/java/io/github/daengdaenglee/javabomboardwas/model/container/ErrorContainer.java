@@ -12,8 +12,4 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ErrorContainer {
     private Error error;
-
-    public static ErrorContainer from(Error error) {
-        return new ErrorContainer(error);
-    }
 }
