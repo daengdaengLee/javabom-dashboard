@@ -17,9 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -77,15 +75,8 @@ public class ArticleHandlerTest {
     @Test
     public void listAllArticles_whenArticlesExist_successReturnServerResponseContainingArticlesList() {
         // given
-        String pattern = ArticleConstant.BASE_PATH;
+        client = mockWebTestClient(RequestPredicates.GET(ArticleConstant.BASE_PATH), articleHandler::listAllArticles);
         String uri = ArticleConstant.BASE_PATH;
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions
-                .route()
-                .GET(pattern, articleHandler::listAllArticles)
-                .build();
-        client = WebTestClient
-                .bindToRouterFunction(routerFunction)
-                .build();
 
         when(articleFindService.findAll()).thenReturn(Flux.just(articleJSON1, articleJSON2));
 
@@ -112,15 +103,11 @@ public class ArticleHandlerTest {
     @Test
     public void readArticle_whenArticleExist_successReturnServerResponseContainingArticle() {
         // given
-        String pattern = ArticleConstant.BASE_PATH + "/{" + ArticleConstant.PATH_VAR_ARTICLE_ID + "}";
+        client = mockWebTestClient(
+                RequestPredicates
+                        .GET(ArticleConstant.BASE_PATH + "/{" + ArticleConstant.PATH_VAR_ARTICLE_ID + "}"),
+                articleHandler::readArticle);
         String uri = ArticleConstant.BASE_PATH + "/" + articleJSON1.getId();
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions
-                .route()
-                .GET(pattern, articleHandler::readArticle)
-                .build();
-        client = WebTestClient
-                .bindToRouterFunction(routerFunction)
-                .build();
 
         when(articleFindService.findById(articleJSON1.getId())).thenReturn(Mono.just(articleJSON1));
 
@@ -143,15 +130,8 @@ public class ArticleHandlerTest {
     @Test
     public void createArticle_withArticleJSONToCreate_successReturnCreatedArticleJSON() {
         // given
-        String pattern = ArticleConstant.BASE_PATH;
+        client = mockWebTestClient(RequestPredicates.POST(ArticleConstant.BASE_PATH), articleHandler::createArticle);
         String uri = ArticleConstant.BASE_PATH;
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions
-                .route()
-                .POST(pattern, articleHandler::createArticle)
-                .build();
-        client = WebTestClient
-                .bindToRouterFunction(routerFunction)
-                .build();
 
         ArticleJSON inputArticle = ArticleJSON.builder()
                 .attributes(AttributesJSON.builder()
@@ -185,15 +165,13 @@ public class ArticleHandlerTest {
     public void updateArticle_withExistArticleAndBothChangedTitleAndContent_successReturnChangedArticleJSON() {
         // given
         String articleId = articleJSON1.getId();
-        String pattern = ArticleConstant.BASE_PATH + "/{" + ArticleConstant.PATH_VAR_ARTICLE_ID + "}";
+
+        client = mockWebTestClient(
+                RequestPredicates
+                        .PUT(ArticleConstant.BASE_PATH + "/{" + ArticleConstant.PATH_VAR_ARTICLE_ID + "}"),
+                articleHandler::updateArticle
+        );
         String uri = ArticleConstant.BASE_PATH + "/" + articleId;
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions
-                .route()
-                .PUT(pattern, articleHandler::updateArticle)
-                .build();
-        client = WebTestClient
-                .bindToRouterFunction(routerFunction)
-                .build();
 
         String changedTitle = articleJSON1.getAttributes().getTitle() + " changed";
         String changedContent = articleJSON1.getAttributes().getContent() + " changed";
@@ -238,15 +216,13 @@ public class ArticleHandlerTest {
     public void deleteArticle_withExistArticleId_successReturnOk() {
         // given
         String articleId = articleJSON1.getId();
-        String pattern = ArticleConstant.BASE_PATH + "/{" + ArticleConstant.PATH_VAR_ARTICLE_ID + "}";
+
+        client = mockWebTestClient(
+                RequestPredicates
+                        .DELETE(ArticleConstant.BASE_PATH + "/{" + ArticleConstant.PATH_VAR_ARTICLE_ID + "}"),
+                articleHandler::deleteArticle
+        );
         String uri = ArticleConstant.BASE_PATH + "/" + articleId;
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions
-                .route()
-                .DELETE(pattern, articleHandler::deleteArticle)
-                .build();
-        client = WebTestClient
-                .bindToRouterFunction(routerFunction)
-                .build();
 
         when(articleDeleteService.deleteById(articleId)).thenReturn(Mono.empty());
 
@@ -270,5 +246,17 @@ public class ArticleHandlerTest {
                 .isEqualTo(expected.getAttributes().getContent());
         assertThat(received.getType()).isEqualTo(expected.getType());
         assertThat(received.getLinks().getSelf()).isEqualTo(expected.getLinks().getSelf());
+    }
+
+    private WebTestClient mockWebTestClient(
+            RequestPredicate requestPredicate,
+            HandlerFunction<ServerResponse> handlerFunction
+    ) {
+        RouterFunction<ServerResponse> routerFunction = RouterFunctions
+                .route(requestPredicate, handlerFunction);
+
+        return WebTestClient
+                .bindToRouterFunction(routerFunction)
+                .build();
     }
 }

@@ -12,21 +12,25 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.util.function.BiFunction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 public class ErrorHandlerTest {
-    private final String pattern = "/";
-    private final String uri = "/";
+    private static final String URI = "/";
+
+    private WebTestClient.RequestHeadersSpec exchangeable;
 
     private ErrorHandler errorHandler;
-    private WebTestClient client;
 
     private Throwable throwable;
     private ArticleNotFoundException articleNotFoundException;
+
     private HttpStatus httpStatus;
 
     @Before
@@ -40,20 +44,15 @@ public class ErrorHandlerTest {
     @Test
     public void handleThrowable_withThrowable_returnInternalServerError() {
         // given
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions
-                .route()
-                .GET(pattern, request -> Mono.error(throwable))
-                .filter((request, next) -> next
-                        .handle(request)
-                        .onErrorResume(exception -> errorHandler.handleThrowable(request, exception)))
-                .build();
-        client = WebTestClient
-                .bindToRouterFunction(routerFunction)
-                .build();
+        exchangeable = mockWebTestClientExchangeable(
+                Throwable.class,
+                throwable,
+                ((request, e) -> errorHandler.handleThrowable(request, e))
+        );
         httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
         // when
-        WebTestClient.ResponseSpec received = client.get().uri(uri).exchange();
+        WebTestClient.ResponseSpec received = exchangeable.exchange();
 
         // then
         received
@@ -61,34 +60,27 @@ public class ErrorHandlerTest {
                 .isEqualTo(httpStatus)
                 .expectBody(ErrorContainer.class)
                 .value(errorContainer -> {
-                   Error receivedError = errorContainer.getError();
+                    Error receivedError = errorContainer.getError();
 
-                   assertThat(receivedError.getStatus()).isEqualTo(httpStatus.value());
-                   assertThat(receivedError.getError()).isEqualTo(httpStatus.getReasonPhrase());
-                   assertThat(receivedError.getMessage()).isEqualTo(throwable.toString());
-                   assertThat(receivedError.getSource().getPointer()).isEqualTo(uri);
+                    assertThat(receivedError.getStatus()).isEqualTo(httpStatus.value());
+                    assertThat(receivedError.getError()).isEqualTo(httpStatus.getReasonPhrase());
+                    assertThat(receivedError.getMessage()).isEqualTo(throwable.toString());
+                    assertThat(receivedError.getSource().getPointer()).isEqualTo(URI);
                 });
     }
 
     @Test
     public void handleArticleNotFoundException_withArticleNotFoundException_returnNotFoundError() {
         // given
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions
-                .route()
-                .GET(pattern, request -> Mono.error(articleNotFoundException))
-                .filter((request, next) -> next
-                        .handle(request)
-                        .onErrorResume(
-                                ArticleNotFoundException.class,
-                                exception -> errorHandler.handleArticleNotFoundException(request, exception)))
-                .build();
-        client = WebTestClient
-                .bindToRouterFunction(routerFunction)
-                .build();
         httpStatus = HttpStatus.NOT_FOUND;
+        exchangeable = mockWebTestClientExchangeable(
+                ArticleNotFoundException.class,
+                articleNotFoundException,
+                (request, e) -> errorHandler.handleArticleNotFoundException(request, e)
+        );
 
         // when
-        WebTestClient.ResponseSpec received = client.get().uri(uri).exchange();
+        WebTestClient.ResponseSpec received = exchangeable.exchange();
 
         // then
         received
@@ -103,5 +95,27 @@ public class ErrorHandlerTest {
                     assertThat(receivedError.getMessage()).isEqualTo(articleNotFoundException.getMessage());
                     assertThat(receivedError.getSource().getPointer()).isEqualTo(articleNotFoundException.getSource());
                 });
+    }
+
+    private <T extends Throwable> WebTestClient.RequestHeadersSpec mockWebTestClientExchangeable(
+            Class<T> clazz,
+            T exception,
+            BiFunction<ServerRequest, T, Mono<ServerResponse>> handler
+    ) {
+        RouterFunction<ServerResponse> routerFunction = RouterFunctions
+                .route()
+                .GET(URI, request -> Mono.error(exception))
+                .filter((request, next) -> next
+                        .handle(request)
+                        .onErrorResume(
+                                clazz,
+                                ex -> handler.apply(request, ex)))
+                .build();
+
+        WebTestClient client = WebTestClient
+                .bindToRouterFunction(routerFunction)
+                .build();
+
+        return client.get().uri(URI);
     }
 }
